@@ -2,6 +2,7 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import json
 
+
 ns = {
     "reqif": "http://www.omg.org/spec/ReqIF/20110401/reqif.xsd",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance"
@@ -51,7 +52,7 @@ def checkAttributeDateType(identifier,root):
     """Check the attribute date type based on the identifier"""
     for element in root.iter(ELEMENT_NAMESPACE+'ATTRIBUTE-DEFINITION-DATE'):
         if element.attrib['IDENTIFIER'] == identifier:
-            return element.attrib['LONG-NAME'] 
+            return element.attrib['LONG-NAME']
 def getObjectAttributeDate(spec,root,dict):
     """Get the attribute date values for each SPEC-OBJECT"""
     for element1, element2 in zip(spec.iter(ELEMENT_NAMESPACE+'ATTRIBUTE-VALUE-DATE'),spec.iter(ELEMENT_NAMESPACE+'ATTRIBUTE-DEFINITION-DATE-REF')):
@@ -97,11 +98,23 @@ def checkAttributeXHTMLType(identifier,root):
             return element.attrib['LONG-NAME']
 def getObjectAttributeXHTML(spec,root,dict):
     """Get the attribute XHTML values for each SPEC-OBJECT"""
-    for element1, element2 in zip(spec.iter(ELEMENT_NAMESPACE_DIV+'div'),spec.iter(ELEMENT_NAMESPACE+'ATTRIBUTE-DEFINITION-XHTML-REF')):
+    for element1, element2 in zip(spec.iter(ELEMENT_NAMESPACE_DIV + 'div'),
+                                  spec.iter(ELEMENT_NAMESPACE + 'ATTRIBUTE-DEFINITION-XHTML-REF')):
         identifier = element2.text
-        attribute_name = Sample_Object[f'{checkAttributeXHTMLType(identifier,root)}']
-        dict[f'{attribute_name}'] = ET.tostring(element1, encoding='unicode')
-
+        # Retrieve the attribute name using checkAttributeXHTMLType function
+        attribute_name = Sample_Object[f'{checkAttributeXHTMLType(identifier, root)}']
+        # Check if the attribute is "Title"
+        if attribute_name == "Title":
+            dict[attribute_name] = element1.text
+        else:
+            # Register an empty prefix for the "http://www.w3.org/1999/xhtml" namespace
+            ET.register_namespace('', 'http://www.w3.org/1999/xhtml')
+            # Serialize the XHTML element
+            serialized_element = ET.tostring(element1, encoding='unicode')
+            # Remove the "html:" prefix from the serialized element
+            serialized_element = serialized_element.replace('html:', '')
+            # Store the serialized element in the dictionary with the attribute name as the key
+            dict[attribute_name] = serialized_element
 def getObjectValues(spec,root,dict):
     """Get all the attribute values for each SPEC-OBJECT"""
     # Get attribute date

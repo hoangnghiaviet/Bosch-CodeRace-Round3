@@ -221,16 +221,16 @@ class Rst_Requirement_Class(Rst_Class):
 
     def XML_To_Text(self):
         Soup = BeautifulSoup(self.Object[Artifact_Key_Dict["ReqIF.Text"]], 'html.parser')
-        List_P = Soup.find_all('html:p')
+        List_P = Soup.find_all('p')
         Formatted_Content = ""
         if len(List_P) > 0:
             Formatted_Content += List_P[0].string + "\n";
         if len(List_P) > 1:
-            Cur_Content = List_P[1].find('html:b')
+            Cur_Content = List_P[1].find('b')
             while Cur_Content != None:
-                if Cur_Content.name == 'html:b':
+                if Cur_Content.name == 'b':
                     Formatted_Content += "**" + Cur_Content.string + "**\n"
-                elif Cur_Content.name == 'html:br':
+                elif Cur_Content.name == 'br':
                     Formatted_Content += "\n"
                 else:
                     Formatted_Content += Cur_Content.string
