@@ -1,6 +1,0 @@
-xmltodict
-beautifulsoup4
-pandas
-openpyxl
-PyGithub
-python-dotenv
